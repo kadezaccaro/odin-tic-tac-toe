@@ -1,3 +1,14 @@
+/* || COLORS */
+
+:root {
+  --color-bg: #030712;
+  --color-grid: #1f2937;
+  --color-marker: #6b7280;
+  --color-marker-accent: #e5e7eb;
+}
+
+/* || GENERAL */
+
 * {
   padding: 0;
   margin: 0;
@@ -5,9 +16,11 @@
 }
 
 body {
-  background-color: black;
-  color: white;
+  background-color: var(--color-bg);
+  color: var(--color-marker);
 }
+
+/* || GAMEBOARD */
 
 .game-container {
   display: grid;
@@ -25,22 +38,44 @@ body {
   font-size: 160px;
   font-family: Helvetica, Arial, sans-serif;
   font-weight: bold;
+  position: relative;
 }
 
-.cell:nth-child(1),
-.cell:nth-child(2),
-.cell:nth-child(3),
-.cell:nth-child(4),
-.cell:nth-child(5),
-.cell:nth-child(6) {
-  border-bottom: 24px solid darkslategray;
+/* || GRID LINES */
+
+.cell::before {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  width: 100%;
+  height: 24px;
+  background-color: var(--color-grid);
 }
 
-.cell:nth-child(1),
-.cell:nth-child(2),
-.cell:nth-child(4),
-.cell:nth-child(5),
-.cell:nth-child(7),
-.cell:nth-child(8) {
-  border-right: 24px solid darkslategray;
+.cell:nth-child(7)::before,
+.cell:nth-child(8)::before,
+.cell:nth-child(9)::before {
+  display: none;
+}
+
+.cell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -12px;
+  bottom: 0;
+  width: 24px;
+  background-color: var(--color-grid);
+}
+
+.cell:nth-child(3)::after,
+.cell:nth-child(6)::after,
+.cell:nth-child(9)::after {
+  display: none;
+}
+
+/* || CPU MARKER */
+
+.cpu-marker-color {
+  color: var(--color-marker-accent);
 }
