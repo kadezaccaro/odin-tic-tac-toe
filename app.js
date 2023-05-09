@@ -96,6 +96,18 @@ const gameModule = (() => {
     return false;
   };
 
+  const resetGame = () => {
+    const gameContainer = document.querySelector(".game-container");
+    restartBtn.classList.add("hide-btn");
+    drawMsg.classList.add("hide-draw-msg");
+    board.fill("");
+    gameContainer.innerHTML = "";
+    createBoard();
+    isUserTurn = true;
+  };
+
+  restartBtn.addEventListener("click", resetGame);
+
   return {
     getBoard,
     getIsUserTurn,
