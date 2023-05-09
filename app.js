@@ -1,35 +1,107 @@
-// * empty board is generated from array of empty strings
-// * default to being user's turn
-// * user chooses a cell position to make a move
-// * if user's turn, marker is "X", otherwise "O"
-// * determine the index of that selected cell
-// * insert marker at that specific index of the array
-// * rerender board after marker is placed into array
-// * becomes cpu's turn
-// randomly insert "O" marker
-// becomes user's turn
-// check for 3 in a row
-// if 3 in a row exist, declare winner
-// if board is filled without 3 in a row, game is a draw
-// restart game
-
 const gameModule = (() => {
   const board = ["", "", "", "", "", "", "", "", ""];
   let isUserTurn = true;
+  const winningCombinations = [
+    [0, 1, 2], // top row
+    [3, 4, 5], // middle row
+    [6, 7, 8], // bottom row
+    [0, 3, 6], // left column
+    [1, 4, 7], // middle column
+    [2, 5, 8], // right column
+    [0, 4, 8], // diagonal from top-left to bottom-right
+    [2, 4, 6], // diagonal from top-right to bottom-left
+  ];
+
+  const drawMsg = document.querySelector(".draw-msg");
+  const restartBtn = document.querySelector(".restart-btn");
 
   const getBoard = () => board;
-
-  const getMarker = () => (isUserTurn ? "X" : "O");
+  const getIsUserTurn = () => isUserTurn;
+  const isBoardFull = () => (board.includes("") ? false : true);
+  const getCurrentMarker = () => (isUserTurn ? "X" : "O");
+  const isMoveValid = (index) => board[index] === "";
+  const switchTurns = () => (isUserTurn = !isUserTurn);
 
   const makeMove = (index) => {
-    board[index] = getMarker();
-    isUserTurn = !isUserTurn;
+    if (!isMoveValid(index)) return;
+
+    board[index] = getCurrentMarker();
+    updateBoard();
+
+    if (checkGameEnd()) return;
+
+    switchTurns();
+    handleCPUMove();
+  };
+
+  const updateBoard = () => {
+    const cells = document.querySelectorAll(".cell");
+
+    cells.forEach((cell, index) => {
+      cell.textContent = board[index];
+
+      if (board[index] === "O") {
+        cell.classList.add("cpu-marker-color");
+      }
+    });
+  };
+
+  const handleCPUMove = () => {
+    setTimeout(() => {
+      let randomNum;
+      do {
+        randomNum = Math.floor(Math.random() * board.length);
+      } while (board[randomNum] !== "");
+
+      board[randomNum] = getCurrentMarker();
+
+      updateBoard();
+
+      if (checkGameEnd()) return;
+
+      switchTurns();
+    }, 500);
+  };
+
+  const checkGameEnd = () => {
+    if (isBoardFull() || checkWinner()) {
+      restartBtn.classList.remove("hide-btn");
+
+      if (isBoardFull() && !checkWinner()) {
+        drawMsg.classList.remove("hide-draw-msg");
+      }
+
+      return true;
+    }
+
+    return false;
+  };
+
+  const checkWinner = () => {
+    const marker = getCurrentMarker();
+    const cells = document.querySelectorAll(".cell");
+
+    for (const combination of winningCombinations) {
+      const [a, b, c] = combination;
+      if (board[a] === marker && board[b] === marker && board[c] === marker) {
+        // add classes to animate the winning combination
+        cells[a].classList.add("winning-cell");
+        cells[b].classList.add("winning-cell");
+        cells[c].classList.add("winning-cell");
+
+        return true;
+      }
+    }
+
+    return false;
   };
 
   return {
     getBoard,
-    getMarker,
+    getIsUserTurn,
     makeMove,
+    updateBoard,
+    checkWinner,
   };
 })();
 
@@ -43,16 +115,17 @@ const createBoard = () => {
     gameContainer.appendChild(cell);
 
     cell.addEventListener("click", () => {
-      handleUserMove(cell, index);
+      handleCellClick(index);
     });
   });
+
+  gameModule.updateBoard();
 };
 
-const handleUserMove = (cell, index) => {
-  if (cell.textContent) return;
-
-  cell.textContent = gameModule.getMarker();
-  gameModule.makeMove(index);
+const handleCellClick = (index) => {
+  if (gameModule.getIsUserTurn() && !gameModule.checkWinner()) {
+    gameModule.makeMove(index);
+  }
 };
 
 window.addEventListener("load", createBoard);
