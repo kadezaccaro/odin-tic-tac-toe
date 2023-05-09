@@ -1,10 +1,17 @@
-/* || COLORS */
+/* || COLORS & TYPOGRAPHY */
 
 :root {
   --color-bg: #030712;
   --color-grid: #1f2937;
   --color-marker: #6b7280;
   --color-marker-accent: #e5e7eb;
+  --color-win: #a3e635;
+  --color-draw: #2dd4bf;
+
+  --font-size-xs: 24px;
+  --font-size-sm: 56px;
+  --font-size-lg: 160px;
+  --font-size-xl: 184px;
 }
 
 /* || GENERAL */
@@ -18,6 +25,8 @@
 body {
   background-color: var(--color-bg);
   color: var(--color-marker);
+  position: relative;
+  overflow: hidden;
 }
 
 /* || GAMEBOARD */
@@ -35,10 +44,14 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 160px;
+  font-size: var(--font-size-lg);
   font-family: Helvetica, Arial, sans-serif;
   font-weight: bold;
   position: relative;
+  /* disable text selection for player markers */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 /* || GRID LINES */
@@ -78,4 +91,82 @@ body {
 
 .cpu-marker-color {
   color: var(--color-marker-accent);
+}
+
+/* || WIN */
+
+.winning-cell {
+  animation: zoomFlash 1s ease-in-out infinite;
+}
+
+@keyframes zoomFlash {
+  0% {
+    color: var(--color-grid);
+  }
+  50% {
+    font-size: var(--font-size-xl);
+    color: var(--color-win);
+  }
+  100% {
+    color: var(--color-grid);
+  }
+}
+
+/* || DRAW */
+
+.draw-msg {
+  color: var(--color-draw);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--font-size-sm);
+  font-family: Helvetica, Arial, sans-serif;
+  animation: zoomFade 1.5s ease-out forwards;
+  /* disable text selection for draw message */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+@keyframes zoomFade {
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    font-size: var(--font-size-lg);
+  }
+}
+
+.hide-draw-msg {
+  display: none;
+}
+
+/* || RESTART BUTTON */
+
+button {
+  cursor: pointer;
+  border: none;
+  background-color: var(--color-win);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: var(--font-size-xs);
+  font-family: Helvetica, Arial, sans-serif;
+  z-index: 2;
+  position: absolute;
+  left: 50%;
+  bottom: 80px;
+  transform: translate(-50%);
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: var(--color-grid);
+  color: var(--color-win);
+}
+
+.hide-btn {
+  bottom: -52px;
+  visibility: hidden;
 }
