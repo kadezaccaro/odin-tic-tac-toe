@@ -37,6 +37,7 @@ body {
   grid-template-rows: repeat(3, 240px);
   place-content: center;
   height: 100vh;
+  height: 100dvh;
 }
 
 .cell {
@@ -169,4 +170,32 @@ button:hover {
 .hide-btn {
   bottom: -52px;
   visibility: hidden;
+}
+
+/* || RESPONSIVE */
+
+@media screen and (max-width: 720px) {
+  :root {
+    --font-size-lg: 80px;
+    --font-size-xl: 96px;
+  }
+
+  .game-container {
+    grid-template-columns: repeat(3, 120px);
+    grid-template-rows: repeat(3, 120px);
+  }
+
+  .cell::before {
+    bottom: -8px;
+    height: 16px;
+  }
+
+  .cell::after {
+    right: -8px;
+    width: 16px;
+  }
+
+  button {
+    bottom: 64px;
+  }
 }
