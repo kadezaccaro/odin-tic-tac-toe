@@ -22,7 +22,7 @@ const gameModule = (() => {
   const isMoveValid = (index) => board[index] === "";
   const switchTurns = () => (isUserTurn = !isUserTurn);
 
-  const makeMove = (index) => {
+  const makeMove = (index, moveType) => {
     if (!isMoveValid(index)) return;
 
     board[index] = getCurrentMarker();
@@ -31,7 +31,10 @@ const gameModule = (() => {
     if (checkGameEnd()) return;
 
     switchTurns();
-    handleCPUMove();
+
+    if (moveType === "user") {
+      handleCPUMove();
+    }
   };
 
   const updateBoard = () => {
@@ -48,19 +51,49 @@ const gameModule = (() => {
 
   const handleCPUMove = () => {
     setTimeout(() => {
-      let randomNum;
-      do {
-        randomNum = Math.floor(Math.random() * board.length);
-      } while (board[randomNum] !== "");
+      const cpuMarker = getCurrentMarker();
+      const userMarker = cpuMarker === "X" ? "O" : "X";
 
-      board[randomNum] = getCurrentMarker();
+      const winningMove = checkIfNextMoveWins(cpuMarker);
+      if (winningMove) {
+        makeMove(winningMove.index);
+        return;
+      }
 
-      updateBoard();
+      const blockingMove = checkIfNextMoveWins(userMarker);
+      if (blockingMove) {
+        makeMove(blockingMove.index);
+        return;
+      }
 
-      if (checkGameEnd()) return;
-
-      switchTurns();
+      const randomMove = getRandomMove();
+      makeMove(randomMove.index);
     }, 500);
+  };
+
+  const checkIfNextMoveWins = (marker) => {
+    for (const combination of winningCombinations) {
+      const [a, b, c] = combination;
+
+      if (
+        (board[a] === marker && board[b] === marker && board[c] === "") ||
+        (board[b] === marker && board[c] === marker && board[a] === "") ||
+        (board[a] === marker && board[c] === marker && board[b] === "")
+      ) {
+        return { index: board[a] === "" ? a : board[b] === "" ? b : c };
+      }
+    }
+
+    return null;
+  };
+
+  const getRandomMove = () => {
+    let randomNum;
+    do {
+      randomNum = Math.floor(Math.random() * board.length);
+    } while (board[randomNum] !== "");
+
+    return { index: randomNum };
   };
 
   const checkGameEnd = () => {
@@ -136,7 +169,7 @@ const createBoard = () => {
 
 const handleCellClick = (index) => {
   if (gameModule.getIsUserTurn() && !gameModule.checkWinner()) {
-    gameModule.makeMove(index);
+    gameModule.makeMove(index, "user");
   }
 };
 
